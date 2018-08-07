@@ -4,7 +4,6 @@ MultiTapButton::MultiTapButton(int pin):
   Button(pin), pressTimer(2000, false), pauseTimer(200, false)
 {
   ignoreRelease = false;
-  resetStates();
 }
 
 void MultiTapButton::update() {
@@ -19,8 +18,7 @@ if(updateTimer.isFinished()){
       pressTimer.start();
     }
     else if( pauseTimer.isActive() ){
-      resetStates();
-      doubleTapDetected = true;
+      detectedAction = DOUBLE_TAP;
       ignoreRelease = true;
       pauseTimer.stop();
     }
@@ -39,14 +37,12 @@ if(updateTimer.isFinished()){
   }
 
   if (pauseTimer.isFinished()) {
-    resetStates();
-    tapDetected = true;
+    detectedAction = SINGLE_TAP;
     pauseTimer.stop();
   }
 
   if (pressTimer.isFinished()) {
-    resetStates();
-    longPressDetected = true; 
+    detectedAction = LONG_PRESS;
     inLongPress = true; 
     ignoreRelease = true;
     pressTimer.stop();
@@ -55,24 +51,24 @@ if(updateTimer.isFinished()){
 }
 
 bool MultiTapButton::wasDoubleTapped() {
-  bool doubleTapped = doubleTapDetected;
-  doubleTapDetected = false;
-  return doubleTapped;
+  if( detectedAction == DOUBLE_TAP )
+  {
+    detectedAction = NOTHING;
+    return true;
+  }
+  return false;
 }
 
 bool MultiTapButton::wasLongPressed() {
-  bool longPressed = longPressDetected;
-  longPressDetected = false;
-  return longPressed;
+  if( detectedAction == LONG_PRESS )
+  {
+    detectedAction = NOTHING;
+    return true;
+  }
+  return false;
 }
 
 bool MultiTapButton::isHeldDown() {
   return inLongPress;
-}
-
-void MultiTapButton::resetStates() {
-  tapDetected = false;
-  doubleTapDetected = false;
-  longPressDetected = false;
 }
 

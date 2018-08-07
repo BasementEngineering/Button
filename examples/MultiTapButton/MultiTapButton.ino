@@ -9,7 +9,9 @@ void setup() {
 
 
 void loop() {
+	
 testButton.update();
+
 if(testButton.wasTapped()){
   Serial.println("Tap detected");
 }

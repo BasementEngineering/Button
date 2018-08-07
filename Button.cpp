@@ -6,17 +6,20 @@ updateTimer(20, true)
   buttonPin = pin;
   pinMode(buttonPin, INPUT);
   pressed = false;
-releaseDetected  = false;
-  tapDetected = false;
+  releaseDetected  = false;
+  detectedAction = NOTHING;
   reading = false;
   previousReading = false;
   updateTimer.start();
 }
 
 bool Button::wasTapped(){
-  bool tapped = tapDetected;
-  tapDetected = false;
-  return tapped;
+  if(detectedAction == SINGLE_TAP)
+  {
+    detectedAction = NOTHING;
+    return true;
+  }
+  return false;
 }
 
 bool Button::wasReleased(){
@@ -36,7 +39,7 @@ checkInput();
   if(reading && !previousReading){
     releaseDetected = false;
     pressed = true;
-    tapDetected = true;
+    detectedAction = SINGLE_TAP;
   }
   else if(previousReading && !reading){
     pressed = false;
